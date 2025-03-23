@@ -1,6 +1,12 @@
 package com.muapp.ui
 
+import android.app.DownloadManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
+import android.provider.OpenableColumns
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import java.time.LocalDate
@@ -24,31 +30,142 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
+import com.muapp.data.AssignmentRepository
+import java.io.File
+import com.muapp.common.BaseAssignment
+import com.muapp.data.SharedAssignment
+import java.time.LocalDateTime
 
 // Assignment Data Model
 data class StudentAssignment(
-    val id: String,
-    val title: String,
-    val subject: String,
-    val dueDate: LocalDate,
+    override val id: String,
+    override val title: String,
+    override val subject: String,
+    override val dueDate: LocalDate,
     val status: AssignmentStatus,
     val submittedFile: String? = null,
     val grade: String? = null,
     val feedback: String? = null
-)
+) : BaseAssignment
+
+enum class SubmissionStatus {
+    SUBMITTING,
+    SUCCESS,
+    ERROR
+}
 
 enum class AssignmentStatus { PENDING, COMPLETED, OVERDUE }
 enum class SortOption { DUE_DATE, SUBJECT, STATUS, TITLE }
-enum class UserRole { STUDENT, FACULTY, PARENT }
+enum class UserRole { STUDENT, FACULTY}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AssignmentsScreen(role: UserRole = UserRole.STUDENT) {
+fun AssignmentsScreen(role: UserRole = UserRole.STUDENT, userId: String = "current_user_id") {
+
+    val context = LocalContext.current
+
+    //to use downloadAssignmentFile
+    val handleDownload : (String) -> Unit = {assignmentId ->
+        val file = AssignmentRepository.getAssignmentFile(assignmentId)
+        file?.let {
+            downloadAssignmentFile(context, it.absolutePath, "Assignment_$assignmentId")
+        }
+    }
+
+    val handleViewSubmission: (String, String) -> Unit = {assignmentId, studentId ->
+        val file = AssignmentRepository.getSubmissionFile(assignmentId, studentId)
+        file?.let {
+            viewSubmittedFile(context, it.absolutePath)
+        }
+    }
+
+    // Initialize Repository
+    DisposableEffect(Unit) {
+        AssignmentRepository.initialize(context)
+        onDispose {  }
+    }
+
     var assignments by remember { mutableStateOf<List<StudentAssignment>>(sampleAssignments) }
     var selectedFilters by remember { mutableStateOf<Set<AssignmentStatus>>(setOf()) }
     var sortBy by remember { mutableStateOf<SortOption>(SortOption.DUE_DATE) }
     var showUploadDialog by remember { mutableStateOf<Boolean>(false) }
+
+    // Add this block to connect to repository (only if you want to use real data)
+    // Collect assignments from repository
+    val repoAssignments by AssignmentRepository.assignments.collectAsState()
+    val activeAssignments = remember {  AssignmentRepository.getActiveAssignments() }
+    val pastAssignments = remember {  AssignmentRepository.getPastAssignments() }
+
+    val assignmentPairs = remember {
+        if(role == UserRole.STUDENT) {
+            AssignmentRepository.getAssignmentsForStudent(userId)
+        } else {
+            AssignmentRepository.assignments.value.map{Pair(it,false)}
+        }
+    }
+
+    // This effect updates your UI when repository data changes
+    LaunchedEffect(repoAssignments) {
+        assignments = if (role == UserRole.STUDENT) {
+            repoAssignments.map { sharedAssignment ->
+                val submission = sharedAssignment.submissions[userId]
+                val status = when {
+                    submission != null -> AssignmentStatus.COMPLETED
+                    sharedAssignment.isDeadlinePassed() -> AssignmentStatus.OVERDUE
+                    else -> AssignmentStatus.PENDING
+                }
+
+                StudentAssignment(
+                    id = sharedAssignment.id,
+                    title = sharedAssignment.title,
+                    subject = sharedAssignment.subject,
+                    dueDate = sharedAssignment.deadline.toLocalDate(),
+                    status = status,
+                    submittedFile = submission?.fileName,
+                    grade = submission?.grade,
+                    feedback = submission?.feedback
+                )
+            }
+        } else {
+            // For faculty, map all assignments
+            repoAssignments.flatMap { sharedAssignment ->
+                if (sharedAssignment.submissions.isEmpty()) {
+                    // Assignment with no submissions
+                    listOf(
+                        StudentAssignment(
+                            id = sharedAssignment.id,
+                            title = sharedAssignment.title,
+                            subject = sharedAssignment.subject,
+                            dueDate = sharedAssignment.deadline.toLocalDate(),
+                            status = if (sharedAssignment.isDeadlinePassed())
+                                AssignmentStatus.OVERDUE else AssignmentStatus.PENDING
+                        )
+                    )
+                } else {
+                    // Map each submission to a StudentAssignment
+                    sharedAssignment.submissions.map { (studentId, submission) ->
+                        StudentAssignment(
+                            id = "${sharedAssignment.id}_$studentId",
+                            title = "${sharedAssignment.title} (${submission.studentName})",
+                            subject = sharedAssignment.subject,
+                            dueDate = sharedAssignment.deadline.toLocalDate(),
+                            status = AssignmentStatus.COMPLETED,
+                            submittedFile = submission.fileName,
+                            grade = submission.grade,
+                            feedback = submission.feedback
+                        )
+                    }
+                }
+            }
+        }
+    }
 
 
     Scaffold(
@@ -71,7 +188,11 @@ fun AssignmentsScreen(role: UserRole = UserRole.STUDENT) {
             )
 
             LazyColumn {
-                items(filterAndSortAssignments(assignments, selectedFilters, sortBy)) { assignment ->
+                // Show active assignments first
+                item {
+                    Text("Active Assignments", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                }
+                items(activeAssignments) { assignment ->
                     AssignmentCard(
                         assignment = assignment,
                         role = role,
@@ -82,6 +203,61 @@ fun AssignmentsScreen(role: UserRole = UserRole.STUDENT) {
                                     feedback = feedback
                                 ) else it
                             }
+                        },
+                        onViewSubmission = if (role == UserRole.FACULTY) {
+                            { assignmentId ->
+                                // Extract studentId from the assignment ID (format: "${sharedAssignment.id}_$studentId")
+                                val parts = assignmentId.split("_")
+                                if (parts.size > 1) {
+                                    handleViewSubmission(parts[0], parts[1])
+                                }
+                            }
+                        } else {
+                            { _ -> }
+                        },
+                        onDownload = if (role == UserRole.STUDENT) {
+                            handleDownload
+                        } else {
+                            { _ -> }
+                        }
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                }
+
+                // Separator
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Past Assignments", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
+                }
+
+                // Show past assignments
+                items(pastAssignments) { assignment ->
+                    AssignmentCard(
+                        assignment = assignment,
+                        role = role,
+                        onGradeSubmit = { grade, feedback ->
+                            assignments = assignments.map {
+                                if (it.id == assignment.id) it.copy(
+                                    grade = grade,
+                                    feedback = feedback
+                                ) else it
+                            }
+                        },
+                        onViewSubmission = if (role == UserRole.FACULTY) {
+                            { assignmentId ->
+                                // Extract studentId from the assignment ID (format: "${sharedAssignment.id}_$studentId")
+                                val parts = assignmentId.split("_")
+                                if (parts.size > 1) {
+                                    handleViewSubmission(parts[0], parts[1])
+                                }
+                            }
+                        } else {
+                            { _ -> }
+                        },
+                        onDownload = if (role == UserRole.STUDENT) {
+                            handleDownload
+                        } else {
+                            { _ -> }
                         }
                     )
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -90,13 +266,30 @@ fun AssignmentsScreen(role: UserRole = UserRole.STUDENT) {
         }
     }
 
-    if (showUploadDialog) {
+    if(showUploadDialog) {
         FileUploadDialog(
             onDismiss = { showUploadDialog = false },
-            onFileSelected = { file ->
-                assignments = assignments.map {
-                    if (it.status == AssignmentStatus.PENDING) it.copy(submittedFile = file)
-                    else it
+            onFileSelected = { path ->
+                // Get the assignment ID
+                val pendingAssignment = assignments.find {it.status == AssignmentStatus.PENDING}
+                pendingAssignment?.let {
+                    // Call submitAssignment from repository
+                    val success = AssignmentRepository.submitAssignment(
+                        assignmentId = it.id,
+                        studentId = userId,
+                        studentName = "Student Name",
+                        filePath = path,
+                        fileName = path.substringAfterLast("/")
+                    )
+
+                    if (success) {
+                        assignments = assignments.map {assignment ->
+                            if(assignment.id == it.id) assignment.copy(
+                                status = AssignmentStatus.COMPLETED,
+                                submittedFile = path.substringAfterLast("/")
+                            ) else assignment
+                        }
+                    }
                 }
             }
         )
@@ -164,12 +357,15 @@ fun filterAndSortAssignments(
         )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun FileUploadDialog(
     onDismiss: () -> Unit,
     onFileSelected: (String) -> Unit
 ) {
     var fileName by remember { mutableStateOf("") }
+    var showFilePicker by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -193,6 +389,15 @@ fun FileUploadDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
+                    Button(onClick = { showFilePicker = true}) {
+                        Text("Browse Files")
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
                     TextButton(onClick = onDismiss) {
                         Text("Cancel")
                     }
@@ -208,13 +413,35 @@ fun FileUploadDialog(
             }
         }
     }
+
+    // Use FilePicker when needed
+    if(showFilePicker) {
+        FilePicker(
+            onFileSelected = {file ->
+                // Use uploadAssignmentFile
+                val path = AssignmentRepository.uploadAssignmentFile(
+                    context,
+                    file.absolutePath,
+                    fileName
+                )
+                path?.let {
+                    fileName = file.name
+                    onFileSelected(it)
+                }
+                showFilePicker = false
+            },
+            onDismiss = { showFilePicker = false }
+        )
+    }
 }
 
 @Composable
 fun AssignmentCard(
-    assignment: StudentAssignment,
+    assignment: BaseAssignment,
     role: UserRole,
-    onGradeSubmit: (String, String) -> Unit = { _, _ -> }
+    onGradeSubmit: (String, String) -> Unit = { _, _ -> },
+    onViewSubmission: (String) -> Unit = { },
+    onDownload: (String) -> Unit = { } // Add this parameter
 ) {
     var showGradeDialog by remember { mutableStateOf(false) }
 
@@ -227,7 +454,13 @@ fun AssignmentCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                StatusIndicator(assignment.status)
+                StatusIndicator(
+                    when (assignment) {
+                        is StudentAssignment -> assignment.status
+                        is SharedAssignment -> "Shared" // Adjust this if SharedAssignment has a status
+                        else -> "Unknown"
+                    } as AssignmentStatus
+                )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = assignment.title,
@@ -241,18 +474,38 @@ fun AssignmentCard(
             InfoRow(Icons.Default.Book, assignment.subject)
             InfoRow(Icons.Default.Event, "Due: ${assignment.dueDate}")
 
-            if (assignment.submittedFile != null) {
-                InfoRow(Icons.Default.Attachment, "Submitted: ${assignment.submittedFile}")
-            }
+            when (assignment) {
+                is StudentAssignment -> {
+                    if (assignment.submittedFile != null) {
+                        InfoRow(
+                            icon = Icons.Default.Attachment,
+                            text = "Submitted: ${assignment.submittedFile}",
+                            onClick = { onViewSubmission(assignment.id) }
+                        )
+                    }
 
-            if (assignment.grade != null) {
-                InfoRow(Icons.Default.Grade, "Grade: ${assignment.grade}")
-            }
+                    if (role == UserRole.STUDENT) {
+                        Button(
+                            onClick = { onDownload(assignment.id) },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(imageVector = Icons.Default.Download, contentDescription = "Download")
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Download Assignment")
+                            }
+                        }
+                    }
 
-            if (assignment.feedback != null) {
-                InfoRow(Icons.Default.Feedback, "Feedback: ${assignment.feedback}")
-            }
+                    if (assignment.grade != null) {
+                        InfoRow(Icons.Default.Grade, "Grade: ${assignment.grade}")
+                    }
 
+                    if (assignment.feedback != null) {
+                        InfoRow(Icons.Default.Feedback, "Feedback: ${assignment.feedback}")
+                    }
+                }
+            }
 
             if (role == UserRole.FACULTY) {
                 Button(
@@ -267,7 +520,7 @@ fun AssignmentCard(
 
     if (showGradeDialog) {
         GradeSubmissionDialog(
-            assignment = assignment,
+            assignment = assignment as StudentAssignment,
             onDismiss = { showGradeDialog = false },
             onSubmit = onGradeSubmit
         )
@@ -290,93 +543,199 @@ fun StatusIndicator(status: AssignmentStatus) {
 }
 
 @Composable
-fun InfoRow(icon: ImageVector, text: String) {
+fun InfoRow(icon: ImageVector, text: String, onClick: (() -> Unit) ? = null) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(vertical = 4.dp)
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            )
     ) {
         Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         Spacer(modifier = Modifier.width(8.dp))
         Text(text, style = MaterialTheme.typography.bodyMedium)
     }
 }
+//@Composable
+//fun GradeSubmissionDialog(
+//    assignment: StudentAssignment,
+//    onDismiss: () -> Unit,
+//    onSubmit: (String, String) -> Unit
+//) {
+//    TODO("Not yet implemented")
+//}
+
 @Composable
 fun GradeSubmissionDialog(
     assignment: StudentAssignment,
     onDismiss: () -> Unit,
     onSubmit: (String, String) -> Unit
 ) {
-    TODO("Not yet implemented")
+    var grade by remember { mutableStateOf("") }
+    var feedback by remember { mutableStateOf("") }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Grade Submission - ${assignment.title}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Grade Input
+                OutlinedTextField(
+                    value = grade,
+                    onValueChange = { grade = it },
+                    label = { Text("Grade") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Feedback Input
+                OutlinedTextField(
+                    value = feedback,
+                    onValueChange = { feedback = it },
+                    label = { Text("Feedback (optional)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Action Buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel")
+                    }
+                    Button(
+                        onClick = {
+                            onSubmit(grade, feedback)
+                            onDismiss()
+                        }
+                    ) {
+                        Text("Submit")
+                    }
+                }
+            }
+        }
+    }
 }
 
-//@Composable
-//fun GradeSubmissionDialog(
-//    assignment: Assignment,
-//    onDismiss: () -> Unit,
-//    onSubmit: (String, String) -> Unit
-//) {
-//    var grade by remember { mutableStateOf("") }
-//    var feedback by remember { mutableStateOf("") }
-//
-//    Dialog(onDismissRequest = onDismiss) {
-//        Card(
-//            modifier = Modifier.fillMaxWidth(),
-//            shape = RoundedCornerShape(16.dp),
-//            elevation = CardDefaults.cardElevation(8.dp)
-//        ) {
-//            Column(
-//                modifier = Modifier.padding(16.dp),
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//                Text(
-//                    text = "Grade Submission - ${assignment.title}",
-//                    style = MaterialTheme.typography.titleMedium,
-//                    color = MaterialTheme.colorScheme.primary
-//                )
-//
-//                Spacer(modifier = Modifier.height(8.dp))
-//
-//                // Grade Input
-//                OutlinedTextField(
-//                    value = grade,
-//                    onValueChange = { grade = it },
-//                    label = { Text("Grade") },
-//                    modifier = Modifier.fillMaxWidth()
-//                )
-//
-//                Spacer(modifier = Modifier.height(8.dp))
-//
-//                // Feedback Input
-//                OutlinedTextField(
-//                    value = feedback,
-//                    onValueChange = { feedback = it },
-//                    label = { Text("Feedback (optional)") },
-//                    modifier = Modifier.fillMaxWidth()
-//                )
-//
-//                Spacer(modifier = Modifier.height(16.dp))
-//
-//                // Action Buttons
-//                Row(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ) {
-//                    TextButton(onClick = onDismiss) {
-//                        Text("Cancel")
-//                    }
-//                    Button(
-//                        onClick = {
-//                            onSubmit(grade, feedback)
-//                            onDismiss()
-//                        }
-//                    ) {
-//                        Text("Submit")
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+// Utility functions
+private fun downloadAssignmentFile(context: Context, url: String, title: String) {
+    // Implementation for downloading assignment files
+    // This would typically use a DownloadManager or similar
+    val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    val request = DownloadManager.Request(url.toUri())
+        .setTitle("Downloading $title")
+        .setDescription("Downloading assignment file")
+        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Assignment_$title.pdf")
+
+    downloadManager.enqueue(request)
+}
+
+private fun viewSubmittedFile(context: Context, url: String) {
+    // Implementation for viewing submitted files
+    // This would typically open the file in the appropriate app
+    val file = File(url)
+    if (file.exists()) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+        intent.setDataAndType(uri, context.contentResolver.getType(uri))
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        context.startActivity(Intent.createChooser(intent, "View Submission"))
+    }
+}
+
+// File picker composable
+@Composable
+    fun FilePicker(
+    onFileSelected: (File) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            // Convert URI to File object
+            val file = createTempFileFromUri(context, uri)
+            file?.let { onFileSelected(it) }
+        }
+        onDismiss()
+    }
+
+    // Launch the file picker
+    LaunchedEffect(true) {
+        launcher.launch("*/*")
+    }
+}
+
+// Helper function to convert URI to File
+private fun createTempFileFromUri(context: Context, uri: Uri): File? {
+    try {
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+        val fileName = getFileNameFromUri(context, uri) ?: "temp_file_${System.currentTimeMillis()}"
+        val tempFile = File(context.cacheDir, fileName)
+
+        inputStream.use { input ->
+            tempFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        return tempFile
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return null
+    }
+}
+
+private fun getFileNameFromUri(context: Context, uri: Uri): String? {
+    var result: String? = null
+    if (uri.scheme == "content") {
+        val cursor = context.contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (nameIndex != -1) {
+                    result = it.getString(nameIndex)
+                }
+            }
+        }
+    }
+    if (result == null) {
+        result = uri.path
+        val cut = result?.lastIndexOf('/')
+        if (cut != -1) {
+            result = result?.substring(cut!! + 1)
+        }
+    }
+    return result
+}
 
 // Sample assignments data
 @RequiresApi(Build.VERSION_CODES.O)
