@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MU-APP</string>
+    <string name="title_activity_qrscanner">QRScannerActivity</string>
 </resources>

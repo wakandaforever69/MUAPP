@@ -1,4 +1,10 @@
 package com.muapp.common
 
-class BaseAssignment {
+import java.time.LocalDate
+
+interface BaseAssignment {
+    val id: String
+    val title: String
+    val subject: String
+    val dueDate: LocalDate
 }

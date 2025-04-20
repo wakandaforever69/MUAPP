@@ -1,5 +1,6 @@
 package com.muapp.android
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -30,7 +31,11 @@ import com.muapp.ui.SignupScreen
 import com.muapp.ui.AttendanceScannerScreen
 import com.muapp.ui.TimetableScreen
 import androidx.compose.ui.platform.LocalContext
+import com.muapp.ui.AssignmentsScreen
+import com.muapp.ui.FacultyDashboard
+import com.muapp.ui.PreviewFacultyDashboard
 import com.muapp.ui.ResultsScreen
+import com.muapp.ui.profile.ProfileScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
@@ -98,7 +103,7 @@ fun AppNavHost() {
             FeatureScreen("View Report", navController)
         }
         composable("profile") {
-            FeatureScreen("Profile", navController)
+            ProfileScreen(navController)
         }
         composable("limitedaccess") {
             FeatureScreen("Limited Access", navController)
@@ -107,7 +112,11 @@ fun AppNavHost() {
             ResultsScreen()
         }
         composable("assignments") {
-            FeatureScreen("Assignments", navController)
+            AssignmentsScreen()
+        }
+
+        composable("assessments") {
+            PreviewFacultyDashboard()
         }
     }
 }

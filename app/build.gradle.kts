@@ -25,7 +25,11 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     java {
@@ -56,12 +60,17 @@ dependencies {
     implementation(libs.androidx.material.v160)
     implementation(libs.androidx.foundation.v160)
     implementation (libs.androidx.ui.v160)
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.5")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.mlkit:barcode-scanning:17.2.0") // ML Kit for barcode scanning
     implementation("androidx.camera:camera-core:1.3.0")         // CameraX core
     implementation("androidx.camera:camera-camera2:1.3.0")     // CameraX Camera2 support
     implementation("androidx.camera:camera-lifecycle:1.3.0")   // Lifecycle-aware CameraX
     implementation("androidx.camera:camera-view:1.3.0")        // CameraX View
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.28.0")
     debugImplementation(libs.ui.tooling)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
