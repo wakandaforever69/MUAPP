@@ -7,8 +7,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.muapp.android.ui.theme.*
 import java.util.*
 
@@ -70,6 +74,12 @@ fun EducationDetailsTab(
                                 }
                             }
                         },
+                        textStyle = TextStyle(
+                            color = Color.White, // Change text color here
+                            fontSize = 16.sp, // Optional: You can also change font size if needed
+                            fontWeight = FontWeight.Normal // Optional: Customize font weight
+                        ),
+
                         label = { Text("Obtained Marks*") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1f),
@@ -97,6 +107,12 @@ fun EducationDetailsTab(
                                 }
                             }
                         },
+                        textStyle = TextStyle(
+                            color = Color.White, // Change text color here
+                            fontSize = 16.sp, // Optional: You can also change font size if needed
+                            fontWeight = FontWeight.Normal // Optional: Customize font weight
+                        ),
+
                         label = { Text("Total Marks*") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.weight(1f),
@@ -114,6 +130,12 @@ fun EducationDetailsTab(
                     label = { Text("Percentage (%)") },
                     readOnly = true,
                     modifier = Modifier.fillMaxWidth(),
+
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary,
@@ -137,6 +159,13 @@ fun EducationDetailsTab(
                         readOnly = true,
                         label = { Text("Year of Passing*") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = yearExpanded) },
+
+                        textStyle = TextStyle(
+                            color = Color.White, // Change text color here
+                            fontSize = 16.sp, // Optional: You can also change font size if needed
+                            fontWeight = FontWeight.Normal // Optional: Customize font weight
+                        ),
+
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Primary,
                             unfocusedBorderColor = TextSecondary
@@ -167,6 +196,12 @@ fun EducationDetailsTab(
                     onValueChange = { educationDetails.board = it },
                     label = { Text("Board/University*") },
                     modifier = Modifier.fillMaxWidth(),
+
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -179,6 +214,12 @@ fun EducationDetailsTab(
                     onValueChange = { educationDetails.schoolName = it },
                     label = { Text("School/College Name*") },
                     modifier = Modifier.fillMaxWidth(),
+
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -191,6 +232,12 @@ fun EducationDetailsTab(
                     onValueChange = { educationDetails.place = it },
                     label = { Text("Place*") },
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
+                    
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary

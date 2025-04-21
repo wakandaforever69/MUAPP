@@ -7,8 +7,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.muapp.android.ui.theme.*
 
 @Composable
@@ -56,6 +60,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     onValueChange = { state.fatherDetails.lastName = it },
                     label = { Text("Last Name*") },
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -69,6 +78,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     label = { Text("Email*") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -87,6 +101,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     label = { Text("Mobile Number*") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -99,6 +118,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     onValueChange = { state.fatherDetails.occupation = it },
                     label = { Text("Occupation*") },
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -117,6 +141,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     label = { Text("Annual Income (₹)*") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -147,6 +176,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     onValueChange = { state.motherDetails.firstName = it },
                     label = { Text("First Name*") },
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -159,6 +193,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     onValueChange = { state.motherDetails.lastName = it },
                     label = { Text("Last Name*") },
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -172,6 +211,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     label = { Text("Email*") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -190,6 +234,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     label = { Text("Mobile Number*") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -202,6 +251,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     onValueChange = { state.motherDetails.occupation = it },
                     label = { Text("Occupation*") },
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
@@ -220,6 +274,11 @@ fun ParentDetailsTab(state: StudentProfileState) {
                     label = { Text("Annual Income (₹)*") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary

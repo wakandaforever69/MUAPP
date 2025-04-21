@@ -8,8 +8,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.muapp.android.ui.theme.*
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -49,7 +53,12 @@ fun ContactDetailsTab(state: StudentProfileState) {
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
-                    )
+                    ),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                 )
 
                 OutlinedTextField(
@@ -60,7 +69,12 @@ fun ContactDetailsTab(state: StudentProfileState) {
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
-                    )
+                    ),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                 )
 
                 // Country dropdown
@@ -79,6 +93,11 @@ fun ContactDetailsTab(state: StudentProfileState) {
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Primary,
                             unfocusedBorderColor = TextSecondary
+                        ),
+                        textStyle = TextStyle(
+                            color = Color.White, // Change text color here
+                            fontSize = 16.sp, // Optional: You can also change font size if needed
+                            fontWeight = FontWeight.Normal // Optional: Customize font weight
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -126,6 +145,11 @@ fun ContactDetailsTab(state: StudentProfileState) {
                             focusedBorderColor = Primary,
                             unfocusedBorderColor = TextSecondary
                         ),
+                        textStyle = TextStyle(
+                            color = Color.White, // Change text color here
+                            fontSize = 16.sp, // Optional: You can also change font size if needed
+                            fontWeight = FontWeight.Normal // Optional: Customize font weight
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -171,6 +195,11 @@ fun ContactDetailsTab(state: StudentProfileState) {
                             focusedBorderColor = Primary,
                             unfocusedBorderColor = TextSecondary
                         ),
+                        textStyle = TextStyle(
+                            color = Color.White, // Change text color here
+                            fontSize = 16.sp, // Optional: You can also change font size if needed
+                            fontWeight = FontWeight.Normal // Optional: Customize font weight
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -206,7 +235,12 @@ fun ContactDetailsTab(state: StudentProfileState) {
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
                         unfocusedBorderColor = TextSecondary
-                    )
+                    ),
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                 )
             }
         }
@@ -269,7 +303,12 @@ fun ContactDetailsTab(state: StudentProfileState) {
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Primary,
                             unfocusedBorderColor = TextSecondary
-                        )
+                        ),
+                        textStyle = TextStyle(
+                            color = Color.White, // Change text color here
+                            fontSize = 16.sp, // Optional: You can also change font size if needed
+                            fontWeight = FontWeight.Normal // Optional: Customize font weight
+                        ),
                     )
 
                     OutlinedTextField(
@@ -280,7 +319,12 @@ fun ContactDetailsTab(state: StudentProfileState) {
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Primary,
                             unfocusedBorderColor = TextSecondary
-                        )
+                        ),
+                        textStyle = TextStyle(
+                            color = Color.White, // Change text color here
+                            fontSize = 16.sp, // Optional: You can also change font size if needed
+                            fontWeight = FontWeight.Normal // Optional: Customize font weight
+                        ),
                     )
 
                     // Country dropdown for permanent address
@@ -299,6 +343,11 @@ fun ContactDetailsTab(state: StudentProfileState) {
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 focusedBorderColor = Primary,
                                 unfocusedBorderColor = TextSecondary
+                            ),
+                            textStyle = TextStyle(
+                                color = Color.White, // Change text color here
+                                fontSize = 16.sp, // Optional: You can also change font size if needed
+                                fontWeight = FontWeight.Normal // Optional: Customize font weight
                             ),
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -345,6 +394,11 @@ fun ContactDetailsTab(state: StudentProfileState) {
                                 focusedBorderColor = Primary,
                                 unfocusedBorderColor = TextSecondary
                             ),
+                            textStyle = TextStyle(
+                                color = Color.White, // Change text color here
+                                fontSize = 16.sp, // Optional: You can also change font size if needed
+                                fontWeight = FontWeight.Normal // Optional: Customize font weight
+                            ),
                             modifier = Modifier.fillMaxWidth()
                         )
 
@@ -389,6 +443,11 @@ fun ContactDetailsTab(state: StudentProfileState) {
                                 focusedBorderColor = Primary,
                                 unfocusedBorderColor = TextSecondary
                             ),
+                            textStyle = TextStyle(
+                                color = Color.White, // Change text color here
+                                fontSize = 16.sp, // Optional: You can also change font size if needed
+                                fontWeight = FontWeight.Normal // Optional: Customize font weight
+                            ),
                             modifier = Modifier.fillMaxWidth()
                         )
 
@@ -424,7 +483,12 @@ fun ContactDetailsTab(state: StudentProfileState) {
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Primary,
                             unfocusedBorderColor = TextSecondary
-                        )
+                        ),
+                        textStyle = TextStyle(
+                            color = Color.White, // Change text color here
+                            fontSize = 16.sp, // Optional: You can also change font size if needed
+                            fontWeight = FontWeight.Normal // Optional: Customize font weight
+                        ),
                     )
                 } else {
                     // If same as current address, show the copied information in a non-editable format

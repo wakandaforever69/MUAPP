@@ -9,8 +9,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.muapp.android.ui.theme.*
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -50,6 +54,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                 onValueChange = { state.firstName = it },
                 label = { Text("First Name*") },
                 modifier = Modifier.weight(1f),
+                textStyle = TextStyle(
+                    color = Color.White, // Change text color here
+                    fontSize = 16.sp, // Optional: You can also change font size if needed
+                    fontWeight = FontWeight.Normal // Optional: Customize font weight
+                ),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Primary,
@@ -62,6 +71,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                 onValueChange = { state.lastName = it },
                 label = { Text("Last Name*") },
                 modifier = Modifier.weight(1f),
+                textStyle = TextStyle(
+                    color = Color.White, // Change text color here
+                    fontSize = 16.sp, // Optional: You can also change font size if needed
+                    fontWeight = FontWeight.Normal // Optional: Customize font weight
+                ),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Primary,
@@ -76,6 +90,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
             onValueChange = { state.fatherName = it },
             label = { Text("Father's Name*") },
             modifier = Modifier.fillMaxWidth(),
+            textStyle = TextStyle(
+                color = Color.White, // Change text color here
+                fontSize = 16.sp, // Optional: You can also change font size if needed
+                fontWeight = FontWeight.Normal // Optional: Customize font weight
+            ),
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Primary,
@@ -88,6 +107,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
             onValueChange = { state.motherName = it },
             label = { Text("Mother's Name*") },
             modifier = Modifier.fillMaxWidth(),
+            textStyle = TextStyle(
+                color = Color.White, // Change text color here
+                fontSize = 16.sp, // Optional: You can also change font size if needed
+                fontWeight = FontWeight.Normal // Optional: Customize font weight
+            ),
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Primary,
@@ -106,6 +130,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                 onValueChange = { state.dob = it },
                 label = { Text("Date of Birth*") },
                 modifier = Modifier.weight(1f),
+                textStyle = TextStyle(
+                    color = Color.White, // Change text color here
+                    fontSize = 16.sp, // Optional: You can also change font size if needed
+                    fontWeight = FontWeight.Normal // Optional: Customize font weight
+                ),
                 singleLine = true,
                 trailingIcon = {
                     IconButton(onClick = { /* Show date picker */ }) {
@@ -128,6 +157,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                 },
                 label = { Text("Parent's Mobile*") },
                 modifier = Modifier.weight(1f),
+                textStyle = TextStyle(
+                    color = Color.White, // Change text color here
+                    fontSize = 16.sp, // Optional: You can also change font size if needed
+                    fontWeight = FontWeight.Normal // Optional: Customize font weight
+                ),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -154,6 +188,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                     value = state.gender,
                     onValueChange = {},
                     readOnly = true,
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     label = { Text("Gender*") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = genderExpanded) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -193,6 +232,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Blood Group*") },
+                    textStyle = TextStyle(
+                        color = Color.White, // Change text color here
+                        fontSize = 16.sp, // Optional: You can also change font size if needed
+                        fontWeight = FontWeight.Normal // Optional: Customize font weight
+                    ),
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = bloodGroupExpanded) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Primary,
@@ -229,6 +273,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                 onValueChange = { state.motherTongue = it },
                 label = { Text("Mother Tongue*") },
                 modifier = Modifier.weight(1f),
+                textStyle = TextStyle(
+                    color = Color.White, // Change text color here
+                    fontSize = 16.sp, // Optional: You can also change font size if needed
+                    fontWeight = FontWeight.Normal // Optional: Customize font weight
+                ),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Primary,
@@ -241,6 +290,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                 onValueChange = { state.religion = it },
                 label = { Text("Religion*") },
                 modifier = Modifier.weight(1f),
+                textStyle = TextStyle(
+                    color = Color.White, // Change text color here
+                    fontSize = 16.sp, // Optional: You can also change font size if needed
+                    fontWeight = FontWeight.Normal // Optional: Customize font weight
+                ),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Primary,
@@ -260,6 +314,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
             },
             label = { Text("Aadhar Card Number*") },
             modifier = Modifier.fillMaxWidth(),
+            textStyle = TextStyle(
+                color = Color.White, // Change text color here
+                fontSize = 16.sp, // Optional: You can also change font size if needed
+                fontWeight = FontWeight.Normal // Optional: Customize font weight
+            ),
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -278,6 +337,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                 onValueChange = { state.caste = it },
                 label = { Text("Caste*") },
                 modifier = Modifier.weight(1f),
+                textStyle = TextStyle(
+                    color = Color.White, // Change text color here
+                    fontSize = 16.sp, // Optional: You can also change font size if needed
+                    fontWeight = FontWeight.Normal // Optional: Customize font weight
+                ),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Primary,
@@ -290,6 +354,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                 onValueChange = { state.subCaste = it },
                 label = { Text("Sub-Caste") },
                 modifier = Modifier.weight(1f),
+                textStyle = TextStyle(
+                    color = Color.White, // Change text color here
+                    fontSize = 16.sp, // Optional: You can also change font size if needed
+                    fontWeight = FontWeight.Normal // Optional: Customize font weight
+                ),
                 singleLine = true,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Primary,
@@ -310,6 +379,11 @@ fun PersonalDetailsTab(state: StudentProfileState) {
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Category*") },
+                textStyle = TextStyle(
+                    color = Color.White, // Change text color here
+                    fontSize = 16.sp, // Optional: You can also change font size if needed
+                    fontWeight = FontWeight.Normal // Optional: Customize font weight
+                ),
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Primary,
